@@ -57,6 +57,7 @@
         development-cli = ./home/profiles/development-cli.nix;
         desktop = ./home/profiles/desktop.nix;
         linux-desktop = ./home/profiles/linux-desktop.nix;
+        multimedia = ./home/profiles/multimedia.nix;
       };
 
       formatter = builtins.listToAttrs (
