@@ -1,0 +1,4 @@
+# encoding: utf-8
+
+patch:
+  __include: emoji_suggestion:/patch
