@@ -1,14 +1,11 @@
 {
   lib,
   pkgs,
-  inputs,
   username,
   ...
 }:
 
 {
-  nixpkgs.overlays = [ inputs.lazy-nvim-nix.overlays.default ];
-
   imports = [
     ./programs/git.nix
     ./programs/zsh.nix

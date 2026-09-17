@@ -7,7 +7,10 @@
   inputs,
 }:
 let
-  pkgs = import nixpkgs { inherit system; };
+  pkgs = import nixpkgs {
+    inherit system;
+    overlays = [ inputs.lazy-nvim-nix.overlays.default ];
+  };
   isDarwin = builtins.match ".*-darwin" system != null;
   home = home-manager.lib.homeManagerConfiguration {
     inherit pkgs;
