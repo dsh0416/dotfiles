@@ -14,7 +14,17 @@ let
   isDarwin = builtins.match ".*-darwin" system != null;
   home = home-manager.lib.homeManagerConfiguration {
     inherit pkgs;
-    modules = [ self.homeModules.base ];
+    modules =
+      if isDarwin then
+        [
+          self.homeModules.base
+          self.homeModules.desktop
+        ]
+      else
+        [
+          self.homeModules.linux
+          self.homeModules.editor
+        ];
     extraSpecialArgs = {
       username = "example";
       inherit inputs;

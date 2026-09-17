@@ -3,7 +3,7 @@
     casks = [
       "kicad"
       "orbstack"
-      "visual-studio-code"
+      "zed"
     ];
 
     masApps.Xcode = 497799835;

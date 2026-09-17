@@ -1,0 +1,45 @@
+{
+  "$schema": "https://zed.dev/schema/settings.json",
+  "agent": {
+    "dock": "right",
+    "favorite_models": [],
+    "model_parameters": []
+  },
+  "git_panel": {
+    "dock": "left"
+  },
+  "outline_panel": {
+    "dock": "left"
+  },
+  "project_panel": {
+    "dock": "left"
+  },
+  "ui_font_family": "Sarasa UI SC",
+  "buffer_font_family": "Sarasa Mono SC",
+  "icon_theme": "Zed (Default)",
+  "agent_servers": {
+    "cursor": {
+      "type": "registry"
+    },
+    "codex-acp": {
+      "type": "registry"
+    }
+  },
+  "cli_default_open_behavior": "existing_window",
+  "theme": {
+    "mode": "dark",
+    "dark": "One Dark",
+    "light": "One Light"
+  },
+  "terminal": {
+    "font_family": "Iosevka Nerd Font",
+    "font_fallbacks": [
+      "Sarasa Mono SC"
+    ],
+    "font_size": 14,
+    "line_height": "standard",
+    "blinking": "terminal_controlled",
+    "shell": "system",
+    "scroll_multiplier": 3.0
+  }
+}

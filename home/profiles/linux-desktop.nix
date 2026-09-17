@@ -4,9 +4,13 @@
   imports = [
     ../programs/hyper.nix
     ../programs/rime-linux.nix
+    ./editor.nix
   ];
 
-  home.packages = [ pkgs.hyper ];
+  home.packages = [
+    pkgs.hyper
+    pkgs.zed-editor
+  ];
 
   xdg.mimeApps = {
     enable = true;

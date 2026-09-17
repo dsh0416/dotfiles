@@ -55,6 +55,7 @@
         base = ./home/base.nix;
         linux = ./home/linux.nix;
         development-cli = ./home/profiles/development-cli.nix;
+        editor = ./home/profiles/editor.nix;
         desktop = ./home/profiles/desktop.nix;
         linux-desktop = ./home/profiles/linux-desktop.nix;
         multimedia = ./home/profiles/multimedia.nix;
