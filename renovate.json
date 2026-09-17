@@ -1,0 +1,27 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "enabledManagers": ["nix", "github-actions"],
+  "nix": {
+    "enabled": true
+  },
+  "schedule": ["before 5am on monday"],
+  "timezone": "Asia/Shanghai",
+  "prConcurrentLimit": 1,
+  "prHourlyLimit": 1,
+  "branchConcurrentLimit": 1,
+  "rebaseWhen": "conflicted",
+  "lockFileMaintenance": {
+    "enabled": false
+  },
+  "packageRules": [
+    {
+      "description": "Group Nix and GitHub Actions updates",
+      "matchManagers": ["nix", "github-actions"],
+      "groupName": "Dependency updates",
+      "groupSlug": "dependency-updates",
+      "separateMajorMinor": false,
+      "automerge": false
+    }
+  ]
+}
