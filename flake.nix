@@ -19,7 +19,16 @@
     };
   };
 
-  outputs = { self, nixpkgs, nix-darwin, home-manager, lazy-nvim-nix, rime-emoji, ... }:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      nix-darwin,
+      home-manager,
+      lazy-nvim-nix,
+      rime-emoji,
+      ...
+    }:
     {
       nixosModules = {
         base = ./modules/nixos/base.nix;
@@ -50,19 +59,41 @@
         linux-desktop = ./home/profiles/linux-desktop.nix;
       };
 
-      formatter = builtins.listToAttrs (map (system: {
-        name = system;
-        value = (import nixpkgs { inherit system; }).nixfmt-rfc-style;
-      }) [ "aarch64-darwin" "aarch64-linux" "x86_64-linux" ]);
+      formatter = builtins.listToAttrs (
+        map
+          (system: {
+            name = system;
+            value = (import nixpkgs { inherit system; }).nixfmt-tree;
+          })
+          [
+            "aarch64-darwin"
+            "aarch64-linux"
+            "x86_64-linux"
+          ]
+      );
 
       # Small evaluation fixtures keep the public module API independently
       # checkable without importing a private host, inventory, or secret.
-    checks = builtins.listToAttrs (map (system: {
-        name = system;
-        value = import ./checks.nix {
-          inherit system nixpkgs nix-darwin home-manager self;
-          inputs = { inherit lazy-nvim-nix rime-emoji; };
-        };
-      }) [ "aarch64-darwin" "aarch64-linux" "x86_64-linux" ]);
+      checks = builtins.listToAttrs (
+        map
+          (system: {
+            name = system;
+            value = import ./checks.nix {
+              inherit
+                system
+                nixpkgs
+                nix-darwin
+                home-manager
+                self
+                ;
+              inputs = { inherit lazy-nvim-nix rime-emoji; };
+            };
+          })
+          [
+            "aarch64-darwin"
+            "aarch64-linux"
+            "x86_64-linux"
+          ]
+      );
     };
 }
