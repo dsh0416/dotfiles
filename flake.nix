@@ -46,7 +46,7 @@
         desktop = ./modules/darwin/profiles/desktop.nix;
         development = ./modules/darwin/profiles/development.nix;
         multimedia = ./modules/darwin/profiles/multimedia.nix;
-        personal = ./modules/darwin/profiles/personal.nix;
+        operations = ./modules/darwin/profiles/operations.nix;
         mobile = ./modules/darwin/profiles/mobile.nix;
         tuna = ./modules/nix/tuna.nix;
       };

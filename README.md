@@ -17,7 +17,8 @@ SSH host keys.
 - `nixosModules.comin`: configurable automatic NixOS deployment; all private
   repository and host-key values are consumer options.
 - `darwinModules.base`, `homebrew`, and capability profiles for desktop,
-  development, multimedia, personal, mobile, and TUNA mirrors.
+  development, multimedia, operations, mobile, and TUNA mirrors. Personal service
+  applications belong in the consuming private host configuration.
 - `homeModules.base`, `development-cli`, `desktop`, and `linux-desktop`.
 
 Compose only the capabilities needed by a host. For example:

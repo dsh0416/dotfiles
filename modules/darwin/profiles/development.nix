@@ -1,6 +1,7 @@
 {
   homebrew = {
     casks = [
+      "android-platform-tools"
       "kicad"
       "orbstack"
       "zed"
