@@ -19,6 +19,11 @@
 
   networking.enableIPv6 = true;
 
+  # Make firmware inventory and updates available on every NixOS host.  The
+  # updater is only queried explicitly; enabling the service does not flash
+  # firmware by itself.
+  services.fwupd.enable = true;
+
   zramSwap = {
     enable = true;
     algorithm = "zstd";
