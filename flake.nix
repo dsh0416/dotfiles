@@ -42,7 +42,9 @@
 
       nixosConfigurations.kiosk = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
-        specialArgs = { username = "nixos"; };
+        specialArgs = {
+          username = "nixos";
+        };
         modules = [
           ./hosts/kiosk/configuration.nix
           self.nixosModules.base
