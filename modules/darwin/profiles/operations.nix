@@ -1,3 +1,3 @@
 {
-  homebrew.brews = [ "terraform" ];
+  homebrew.brews = [ "opentofu" ];
 }
