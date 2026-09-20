@@ -40,29 +40,6 @@
         tuna = ./modules/nix/tuna.nix;
       };
 
-      nixosConfigurations.kiosk = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = {
-          username = "nixos";
-        };
-        modules = [
-          ./hosts/kiosk/configuration.nix
-          self.nixosModules.base
-          self.nixosModules.desktop
-          self.nixosModules.tuna
-          home-manager.nixosModules.home-manager
-          {
-            nixpkgs.overlays = [ lazy-nvim-nix.overlays.default ];
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.extraSpecialArgs = {
-              username = "nixos";
-              inputs = { inherit lazy-nvim-nix rime-emoji; };
-            };
-          }
-        ];
-      };
-
       darwinModules = {
         base = ./modules/darwin/base.nix;
         homebrew = ./modules/darwin/homebrew.nix;
