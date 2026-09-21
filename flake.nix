@@ -101,6 +101,31 @@
         synergy3 = final.callPackage ./packages/synergy3.nix { };
       };
 
+      packages = forAllSystems (system: {
+        mise = nixpkgs.legacyPackages.${system}.callPackage ./packages/mise { };
+      });
+
+      apps = forAllSystems (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+          updateMise = pkgs.writeShellApplication {
+            name = "update-mise";
+            runtimeInputs = [ pkgs.python3 ];
+            text = ''
+              exec python3 ${./packages/mise/update.py} \
+                --manifest "$PWD/packages/mise/sources.json" "$@"
+            '';
+          };
+        in
+        {
+          update-mise = {
+            type = "app";
+            program = "${updateMise}/bin/update-mise";
+          };
+        }
+      );
+
       formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
 
       # Small evaluation fixtures keep the public module API independently

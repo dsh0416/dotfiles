@@ -131,6 +131,30 @@ TUNA is opt-in. Import `dotfiles.darwinModules.tuna` or
 `dotfiles.nixosModules.tuna` only where the mirror is wanted. The module is
 kept separate so existing hosts do not change behavior implicitly.
 
+## mise releases
+
+`homeModules.mise` installs the package maintained in `packages/mise/`, also
+available as `packages.<system>.mise`. It uses pinned upstream release archives
+for Apple Silicon macOS and both x86_64 and aarch64 Linux (static musl builds).
+Its release cycle is independent of the consumer's NixOS/nixpkgs version.
+The upstream binary finds helper tools such as Git and Bash on `PATH`; direnv
+integration also needs `direnv`. Provide those tools when using the package in
+an isolated shell.
+
+From this repository, update to the latest stable release or an explicit version:
+
+```sh
+nix run .#update-mise
+nix run .#update-mise -- 2026.9.12
+nix build .#mise
+```
+
+The updater downloads all three archives and verifies their SHA-256 checksums
+against the release checksum file before replacing `packages/mise/sources.json`.
+Review and commit that manifest, then update the consuming repository's
+`dotfiles` input. Builds use only the committed version and hashes; they never
+resolve `latest`. No additional nixpkgs input or consumer overlay is needed.
+
 ## Checks
 
 ```sh

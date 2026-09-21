@@ -214,6 +214,7 @@ let
       };
 in
 {
+  mise = self.packages.${system}.mise;
   home-manager =
     assert lib.any (package: lib.getName package == "nixd") home.config.home.packages;
     assert zedSettings.auto_install_extensions.nix;
@@ -224,6 +225,8 @@ in
       ];
     home.activationPackage;
   module-composition =
+    assert lib.any (package: package.drvPath == self.packages.${system}.mise.drvPath)
+      (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages;
     assert
       !(builtins.elem mirror (if isDarwin then darwin else server).config.nix.settings.substituters);
     assert builtins.head withTuna.config.nix.settings.substituters == mirror;

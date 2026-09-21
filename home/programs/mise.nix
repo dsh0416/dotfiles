@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 {
-  home.packages = [ pkgs.mise ];
+  home.packages = [ (pkgs.callPackage ../../packages/mise { }) ];
   home.sessionPath = [ "$HOME/.local/share/mise/shims" ];
 
   xdg.configFile."mise/config.toml" = {
