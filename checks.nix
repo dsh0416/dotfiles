@@ -180,6 +180,7 @@ let
           assert gitlabNixRunner.config.virtualisation.podman.dockerSocket.enable;
           assert !gitlabNixRunner.config.virtualisation.docker.enable;
           assert gitlabNixRunner.config.services.gitlab-runner.services.nix-example.executor == "docker";
+          assert !gitlabNixRunner.config.systemd.services.gitlab-runner.reloadIfChanged;
           gitlabNixRunner.config.system.build.toplevel.drvPath;
         # Host additions must keep their original precedence over the preset.
         desktop-host-fonts =

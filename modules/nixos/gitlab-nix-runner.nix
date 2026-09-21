@@ -427,6 +427,11 @@ in
           '';
         };
         gitlab-runner = {
+          # The upstream module normally reloads config in place. A reload
+          # cannot apply newly added SupplementaryGroups, so switching from a
+          # shell runner to Podman would leave the old process unable to open
+          # the Podman socket until the next reboot.
+          reloadIfChanged = lib.mkForce false;
           after = [
             "dotfiles-gitlab-nix-runner-image.service"
           ]
