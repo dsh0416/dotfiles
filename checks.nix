@@ -153,7 +153,11 @@ let
       }
       # Hyper and Chrome in the existing desktop profile target x86_64 Linux.
       // lib.optionalAttrs (system == "x86_64-linux") {
-        desktop = desktop.config.system.build.toplevel.drvPath;
+        desktop =
+          assert lib.any (
+            package: (package.meta.mainProgram or null) == "zed"
+          ) desktop.config.home-manager.users.${username}.home.packages;
+          desktop.config.system.build.toplevel.drvPath;
         podman = podman.config.system.build.toplevel.drvPath;
         # Host additions must keep their original precedence over the preset.
         desktop-host-fonts =
