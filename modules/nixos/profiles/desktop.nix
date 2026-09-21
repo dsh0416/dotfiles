@@ -1,5 +1,8 @@
 { pkgs, username, ... }:
 
+let
+  kimpanel = pkgs.gnomeExtensions.kimpanel;
+in
 {
   imports = [ ./server.nix ];
 
@@ -39,7 +42,10 @@
 
   # Keep the remote-management and CLI environment from the server profile,
   # then layer the graphical workstation environment on top.
-  home-manager.users.${username}.imports = [ ../../../home/profiles/linux-desktop.nix ];
+  home-manager.users.${username} = {
+    imports = [ ../../../home/profiles/linux-desktop.nix ];
+    dconf.settings."org/gnome/shell".enabled-extensions = [ kimpanel.extensionUuid ];
+  };
 
   services = {
     xserver.enable = true;
@@ -68,7 +74,10 @@
   };
 
   nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [ "google-chrome" ];
-  environment.systemPackages = with pkgs; [ google-chrome ];
+  environment.systemPackages = [
+    pkgs.google-chrome
+    kimpanel
+  ];
 
   fonts = {
     packages = with pkgs; [
