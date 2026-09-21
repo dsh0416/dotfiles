@@ -1,5 +1,8 @@
+{ lib, ... }:
+
 {
-  nixpkgs.overlays = [
+  # Keep consumer overlays ahead of this compatibility repair.
+  nixpkgs.overlays = lib.mkAfter [
     (final: prev: {
       hyper = prev.hyper.overrideAttrs (old: {
         nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.makeWrapper ];

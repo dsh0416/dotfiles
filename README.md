@@ -17,14 +17,26 @@ SSH host keys.
 - `nixosModules.gnome`, `fcitx5`, `fonts`, and `hyper`: individual desktop
   capabilities. `hyper` supplies the existing runtime-library overlay; it does
   not install the application on its own.
+- `nixosModules.podman`: Podman, Docker CLI compatibility, container-name DNS,
+  IPv6-capable default networking, and the declarative OCI backend. Consumers
+  retain ownership of fleet-specific subnets and routed addresses.
+- `nixosModules.bootstrap`: the cloud-init, serial-console, key-only SSH, and
+  QEMU guest baseline used by bootstrap VM images.
+- `nixosModules.caddy-cloudflare`: Caddy built with the Cloudflare DNS plugin;
+  domains, credentials, ACME identity, firewall policy, and virtual hosts stay
+  in the consuming infrastructure repository.
 - `nixosModules.comin`: configurable automatic NixOS deployment; all private
   repository and host-key values are consumer options.
 - `darwinModules.base`, `homebrew`, and capability profiles for desktop,
   development, multimedia, operations, mobile, and TUNA mirrors. Personal service
   applications belong in the consuming private host configuration.
+- Darwin keyboard, pointer, sharing, Scroll Reverser, and Tinycast leaves are
+  exported for consumers that need finer composition than the desktop profile.
 - `homeModules.base`, `linux`, `development-cli`, `editor`, `desktop`,
   `linux-desktop`, and `multimedia`. The existing `desktop` name selects the
   macOS Home Manager profile; `linux` adds the Linux home-directory convention.
+- Program-level Home Manager modules are exported for CLI, Git, Hyper, mise,
+  Neovim, Rime, Starship, Zed, and Zsh.
 - `nixosModules.maintenance` and `darwinModules.maintenance`: shared Nix
   feature, garbage-collection, and store-optimisation policy. Both `base`
   modules import it and retain their platform-specific schedules.
@@ -103,3 +115,8 @@ The complete Linux desktop is evaluated on x86_64, matching its Hyper/Chrome
 package support, including a host that adds its own fonts to the preset.
 `module-composition` records the evaluated derivations without
 building entire workstations. No check activates a host.
+
+The `overlays.synergy3` overlay supplies a package for the vendor-provided
+Synergy 3 Debian artifact. Because the download requires an authenticated
+account, the consumer must add the named fixed-output source to the Nix store
+before building.
