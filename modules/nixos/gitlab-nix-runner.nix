@@ -28,20 +28,26 @@ let
 
   jobImageName = "localhost/dotfiles-gitlab-nix-runner:${pkgs.nix.version}";
   jobPath = lib.makeBinPath jobPackages;
-  jobContents = jobPackages ++ [ pkgs.dockerTools.fakeNss ];
+  fakeNss = pkgs.dockerTools.fakeNss;
 
   jobImage = pkgs.dockerTools.buildLayeredImage {
     name = "localhost/dotfiles-gitlab-nix-runner";
     tag = pkgs.nix.version;
 
-    contents = jobContents;
+    contents = jobPackages;
     # The same closures are copied into each isolated CI store by its seed
     # unit. Keep only root-level links in the image so the mounted store is the
     # single source of package contents at runtime.
     includeStorePaths = false;
 
     extraCommands = ''
-      mkdir -p root tmp usr
+      mkdir -p etc root tmp usr
+      # Podman reads and may modify these files while preparing the container,
+      # before runtime bind mounts such as /nix/store are active. They must be
+      # regular image files rather than fakeNss symlinks into the Nix store.
+      cp -L ${fakeNss}/etc/passwd etc/passwd
+      cp -L ${fakeNss}/etc/group etc/group
+      cp -L ${fakeNss}/etc/nsswitch.conf etc/nsswitch.conf
       chmod 1777 tmp
       ln -s ../bin usr/bin
     '';
@@ -254,7 +260,7 @@ let
         nix copy \
           --no-check-sigs \
           --to 'local?root=${data.storeRoot}&require-sigs=false' \
-          ${lib.escapeShellArgs jobContents}
+          ${lib.escapeShellArgs jobPackages}
       '';
     }
   ) instanceData;
