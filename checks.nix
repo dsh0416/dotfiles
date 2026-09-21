@@ -230,6 +230,23 @@ in
       (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages;
     assert lib.any (package: package.drvPath == pkgs.rustup.drvPath)
       (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages;
+    assert
+      let
+        sessionPath =
+          (if isDarwin then darwin else server).config.home-manager.users.${username}.home.sessionPath;
+      in
+      lib.take 2 (
+        lib.filter (
+          path:
+          builtins.elem path [
+            "$HOME/.local/share/mise/shims"
+            "${pkgs.rustup}/bin"
+          ]
+        ) sessionPath
+      ) == [
+        "$HOME/.local/share/mise/shims"
+        "${pkgs.rustup}/bin"
+      ];
     assert lib.all
       (
         required:
