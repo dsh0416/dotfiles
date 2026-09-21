@@ -114,6 +114,22 @@ let
     ];
   };
   podman = server.extendModules { modules = [ self.nixosModules.podman ]; };
+  gitlabNixRunner = server.extendModules {
+    modules = [
+      self.nixosModules.gitlab-nix-runner
+      {
+        services.dotfiles-gitlab-nix-runner = {
+          enable = true;
+          instances.example = {
+            authenticationTokenConfigFile = "/run/secrets/gitlab-runner-token";
+            description = "example.invalid Nix runner";
+            cpuQuota = "200%";
+            memoryMax = "4G";
+          };
+        };
+      }
+    ];
+  };
   comin = server.extendModules {
     modules = [
       self.nixosModules.comin
@@ -160,6 +176,11 @@ let
           ) desktop.config.home-manager.users.${username}.home.packages;
           desktop.config.system.build.toplevel.drvPath;
         podman = podman.config.system.build.toplevel.drvPath;
+        gitlab-nix-runner =
+          assert gitlabNixRunner.config.virtualisation.podman.dockerSocket.enable;
+          assert !gitlabNixRunner.config.virtualisation.docker.enable;
+          assert gitlabNixRunner.config.services.gitlab-runner.services.nix-example.executor == "docker";
+          gitlabNixRunner.config.system.build.toplevel.drvPath;
         # Host additions must keep their original precedence over the preset.
         desktop-host-fonts =
           assert
@@ -224,5 +245,6 @@ in
   else
     {
       nixos-module = nixos.config.system.build.toplevel;
+      gitlab-nix-runner-image = gitlabNixRunner.config.system.build.dotfilesGitlabNixRunnerJobImage;
     }
 )

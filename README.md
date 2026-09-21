@@ -27,6 +27,10 @@ SSH host keys.
   in the consuming infrastructure repository.
 - `nixosModules.comin`: configurable automatic NixOS deployment; all private
   repository and host-key values are consumer options.
+- `nixosModules.gitlab-nix-runner`: GitLab Docker-executor jobs backed by
+  Podman and isolated, persistent local Nix stores. Each named trust domain has
+  its own daemon socket, build users, store, and mutable cache; consumers
+  provide runtime token paths and resource limits.
 - `darwinModules.base`, `homebrew`, and capability profiles for desktop,
   development, multimedia, operations, mobile, and TUNA mirrors. Personal service
   applications belong in the consuming private host configuration.
@@ -85,6 +89,32 @@ modules = [
   dotfiles.nixosModules.fonts
 ];
 ```
+
+The GitLab Nix runner module keeps the container executor separate from Nix
+build execution. A consumer supplies one runtime authentication file per trust
+domain:
+
+```nix
+{
+  imports = [ dotfiles.nixosModules.gitlab-nix-runner ];
+
+  services.dotfiles-gitlab-nix-runner = {
+    enable = true;
+    instances.private = {
+      authenticationTokenConfigFile = "/run/secrets/gitlab-runner-token";
+      maxJobs = 2;
+      requestConcurrency = 2;
+    };
+  };
+}
+```
+
+Each instance has a different store, daemon socket, build users, and `/cache`.
+Jobs receive the store as a read-only mount and the daemon treats every client
+as untrusted. Do not place public/fork jobs and private source in the same
+instance: every job in one instance can read that instance's store. Store
+garbage collection is deliberately left to the consumer so it cannot remove a
+path while a container is executing it.
 
 System profiles that configure a user environment (`server` and `desktop`)
 require the consumer's Home Manager integration. Keep supplying `username`

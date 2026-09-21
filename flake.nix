@@ -54,6 +54,7 @@
         fcitx5 = ./modules/nixos/fcitx5.nix;
         fonts = ./modules/nixos/fonts.nix;
         hyper = ./modules/nixos/hyper.nix;
+        gitlab-nix-runner = ./modules/nixos/gitlab-nix-runner.nix;
         maintenance = ./modules/nix/maintenance.nix;
         podman = ./modules/nixos/podman.nix;
         tuna = ./modules/nix/tuna.nix;
