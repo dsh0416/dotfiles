@@ -19,6 +19,7 @@ let
     config.allowUnfreePredicate = package: lib.getName package == "synergy3";
   };
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+  zedSettings = builtins.fromJSON (builtins.readFile ./config/zed/settings.json);
   home = home-manager.lib.homeManagerConfiguration {
     inherit pkgs;
     modules =
@@ -192,7 +193,15 @@ let
       };
 in
 {
-  home-manager = home.activationPackage;
+  home-manager =
+    assert lib.any (package: lib.getName package == "nixd") home.config.home.packages;
+    assert zedSettings.auto_install_extensions.nix;
+    assert
+      zedSettings.languages.Nix.language_servers == [
+        "nixd"
+        "!nil"
+      ];
+    home.activationPackage;
   module-composition =
     assert
       !(builtins.elem mirror (if isDarwin then darwin else server).config.nix.settings.substituters);

@@ -1,6 +1,8 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
+  home.packages = [ pkgs.nixd ];
+
   home.sessionVariables = {
     EDITOR = "zed --wait";
     VISUAL = "zed --wait";
