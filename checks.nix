@@ -228,6 +228,8 @@ in
   module-composition =
     assert lib.any (package: package.drvPath == self.packages.${system}.mise.drvPath)
       (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages;
+    assert lib.any (package: package.drvPath == pkgs.rustup.drvPath)
+      (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages;
     assert lib.all
       (
         required:
