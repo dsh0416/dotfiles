@@ -10,8 +10,9 @@ SSH host keys.
 
 ## Public module API
 
-- `nixosModules.base`: common server base, garbage collection, optimisation,
-  zram/swap, latest kernel, and login-time kernel reboot notification.
+- `nixosModules.base`: common server base, system-wide Python and Unix build
+  tools, garbage collection, optimisation, zram/swap, latest kernel, and
+  login-time kernel reboot notification.
 - `nixosModules.server` and `nixosModules.desktop`: SSH-only server/TUI and
   GNOME workstation layers.
 - `nixosModules.gnome`, `fcitx5`, `fonts`, and `hyper`: individual desktop
@@ -32,8 +33,9 @@ SSH host keys.
   its own daemon socket, build users, store, and mutable cache; consumers
   provide runtime token paths and resource limits.
 - `darwinModules.base`, `homebrew`, and capability profiles for desktop,
-  development, multimedia, operations, mobile, and TUNA mirrors. Personal service
-  applications belong in the consuming private host configuration.
+  development, multimedia, operations, mobile, and TUNA mirrors. The base also
+  supplies system-wide Python and Unix build tools. Personal service applications
+  belong in the consuming private host configuration.
 - Darwin keyboard, pointer, sharing, Scroll Reverser, and Tinycast leaves are
   exported for consumers that need finer composition than the desktop profile.
 - `homeModules.base`, `linux`, `development-cli`, `editor`, `desktop`,
@@ -44,6 +46,9 @@ SSH host keys.
 - `nixosModules.maintenance` and `darwinModules.maintenance`: shared Nix
   feature, garbage-collection, and store-optimisation policy. Both `base`
   modules import it and retain their platform-specific schedules.
+- `nixosModules.build-tools` and `darwinModules.build-tools`: shared Python,
+  C/C++ compiler, GNU Make, and pkg-config toolchain. Both `base` modules import
+  it so mise can compile runtimes and Rust projects can invoke a system linker.
 
 ## Composition
 

@@ -227,6 +227,21 @@ in
   module-composition =
     assert lib.any (package: package.drvPath == self.packages.${system}.mise.drvPath)
       (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages;
+    assert lib.all
+      (
+        required:
+        lib.any (package: package.drvPath == required.drvPath)
+          (if isDarwin then darwin else server).config.environment.systemPackages
+      )
+      (
+        with pkgs;
+        [
+          python3
+          stdenv.cc
+          gnumake
+          pkg-config
+        ]
+      );
     assert
       !(builtins.elem mirror (if isDarwin then darwin else server).config.nix.settings.substituters);
     assert builtins.head withTuna.config.nix.settings.substituters == mirror;

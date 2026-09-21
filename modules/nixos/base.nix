@@ -6,6 +6,7 @@
 
 {
   imports = [
+    ../nix/build-tools.nix
     ../nix/maintenance.nix
     ./kernel-reboot-check.nix
   ];

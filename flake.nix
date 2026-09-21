@@ -55,6 +55,7 @@
         fonts = ./modules/nixos/fonts.nix;
         hyper = ./modules/nixos/hyper.nix;
         gitlab-nix-runner = ./modules/nixos/gitlab-nix-runner.nix;
+        build-tools = ./modules/nix/build-tools.nix;
         maintenance = ./modules/nix/maintenance.nix;
         podman = ./modules/nixos/podman.nix;
         tuna = ./modules/nix/tuna.nix;
@@ -73,6 +74,7 @@
         multimedia = ./modules/darwin/profiles/multimedia.nix;
         operations = ./modules/darwin/profiles/operations.nix;
         mobile = ./modules/darwin/profiles/mobile.nix;
+        build-tools = ./modules/nix/build-tools.nix;
         maintenance = ./modules/nix/maintenance.nix;
         tuna = ./modules/nix/tuna.nix;
       };
