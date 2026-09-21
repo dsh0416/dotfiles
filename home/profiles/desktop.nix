@@ -1,8 +1,7 @@
 {
   imports = [
     ../darwin/zsh.nix
-    ../programs/hyper.nix
+    ./desktop-common.nix
     ../programs/rime.nix
-    ./editor.nix
   ];
 }

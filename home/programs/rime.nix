@@ -6,16 +6,12 @@
 }:
 
 let
-  managedFiles = {
-    "Library/Rime/default.custom.yaml" = ../../config/rime/default.custom.yaml;
-    "Library/Rime/double_pinyin_flypy.schema.yaml" = ../../config/rime/double_pinyin_flypy.schema.yaml;
-    "Library/Rime/double_pinyin_flypy.custom.yaml" = ../../config/rime/double_pinyin_flypy.custom.yaml;
-    "Library/Rime/squirrel.custom.yaml" = ../../config/rime/squirrel.custom.yaml;
-    "Library/Rime/emoji_suggestion.yaml" = "${inputs.rime-emoji}/emoji_suggestion.yaml";
-    "Library/Rime/opencc/emoji.json" = "${inputs.rime-emoji}/opencc/emoji.json";
-    "Library/Rime/opencc/emoji_category.txt" = "${inputs.rime-emoji}/opencc/emoji_category.txt";
-    "Library/Rime/opencc/emoji_word.txt" = "${inputs.rime-emoji}/opencc/emoji_word.txt";
-  };
+  managedFiles = lib.mapAttrs' (name: source: lib.nameValuePair "Library/Rime/${name}" source) (
+    (import ./rime-files.nix { inherit inputs; })
+    // {
+      "squirrel.custom.yaml" = ../../config/rime/squirrel.custom.yaml;
+    }
+  );
 
   managedConfigVersion =
     "deploy-hook-version 3\n"

@@ -20,15 +20,20 @@
   };
 
   outputs =
-    {
+    inputs@{
       self,
       nixpkgs,
       nix-darwin,
       home-manager,
-      lazy-nvim-nix,
-      rime-emoji,
       ...
     }:
+    let
+      forAllSystems = nixpkgs.lib.genAttrs [
+        "aarch64-darwin"
+        "aarch64-linux"
+        "x86_64-linux"
+      ];
+    in
     {
       nixosModules = {
         base = ./modules/nixos/base.nix;
@@ -37,6 +42,11 @@
         server = ./modules/nixos/profiles/server.nix;
         desktop = ./modules/nixos/profiles/desktop.nix;
         comin = ./modules/nixos/comin.nix;
+        gnome = ./modules/nixos/gnome.nix;
+        fcitx5 = ./modules/nixos/fcitx5.nix;
+        fonts = ./modules/nixos/fonts.nix;
+        hyper = ./modules/nixos/hyper.nix;
+        maintenance = ./modules/nix/maintenance.nix;
         tuna = ./modules/nix/tuna.nix;
       };
 
@@ -48,6 +58,7 @@
         multimedia = ./modules/darwin/profiles/multimedia.nix;
         operations = ./modules/darwin/profiles/operations.nix;
         mobile = ./modules/darwin/profiles/mobile.nix;
+        maintenance = ./modules/nix/maintenance.nix;
         tuna = ./modules/nix/tuna.nix;
       };
 
@@ -61,41 +72,22 @@
         multimedia = ./home/profiles/multimedia.nix;
       };
 
-      formatter = builtins.listToAttrs (
-        map
-          (system: {
-            name = system;
-            value = (import nixpkgs { inherit system; }).nixfmt-tree;
-          })
-          [
-            "aarch64-darwin"
-            "aarch64-linux"
-            "x86_64-linux"
-          ]
-      );
+      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
 
       # Small evaluation fixtures keep the public module API independently
       # checkable without importing a private host, inventory, or secret.
-      checks = builtins.listToAttrs (
-        map
-          (system: {
-            name = system;
-            value = import ./checks.nix {
-              inherit
-                system
-                nixpkgs
-                nix-darwin
-                home-manager
-                self
-                ;
-              inputs = { inherit lazy-nvim-nix rime-emoji; };
-            };
-          })
-          [
-            "aarch64-darwin"
-            "aarch64-linux"
-            "x86_64-linux"
-          ]
+      checks = forAllSystems (
+        system:
+        import ./checks.nix {
+          inherit
+            system
+            nixpkgs
+            nix-darwin
+            home-manager
+            self
+            inputs
+            ;
+        }
       );
     };
 }
