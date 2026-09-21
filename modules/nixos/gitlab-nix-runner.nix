@@ -198,7 +198,7 @@ let
         build-dir = ${storeRoot}/builds
         build-users-group = ${buildGroup}
         cores = ${toString instance.cores}
-        experimental-features = nix-command flakes daemon-trust-override
+        experimental-features = nix-command flakes daemon-trust-override mounted-ssh-store
         keep-derivations = false
         keep-outputs = false
         max-jobs = ${toString instance.maxJobs}
