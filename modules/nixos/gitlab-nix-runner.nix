@@ -334,6 +334,10 @@ let
       environmentVariables = {
         FF_NETWORK_PER_BUILD = "1";
         NIX_REMOTE = "daemon";
+        # Nix keeps flake source metadata outside the store. Persist it with
+        # the trust domain's mutable cache so a fresh job container can map
+        # locked URLs to store paths without downloading them again.
+        XDG_CACHE_HOME = "/cache/xdg";
       }
       // data.instance.environmentVariables;
       registrationFlags = [

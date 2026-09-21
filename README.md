@@ -118,10 +118,11 @@ domain:
 
 Each instance has a different store, daemon socket, build users, and `/cache`.
 Jobs receive the store as a read-only mount and the daemon treats every client
-as untrusted. Do not place public/fork jobs and private source in the same
-instance: every job in one instance can read that instance's store. Store
-garbage collection is deliberately left to the consumer so it cannot remove a
-path while a container is executing it.
+as untrusted. `XDG_CACHE_HOME` points at `/cache/xdg`, which preserves Nix's
+flake source metadata between fresh job containers. Do not place public/fork
+jobs and private source in the same instance: every job in one instance can
+read that instance's store. Store garbage collection is deliberately left to
+the consumer so it cannot remove a path while a container is executing it.
 
 System profiles that configure a user environment (`server` and `desktop`)
 require the consumer's Home Manager integration. Keep supplying `username`
