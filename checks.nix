@@ -19,6 +19,16 @@ let
     config.allowUnfreePredicate = package: lib.getName package == "synergy3";
   };
   isDarwin = pkgs.stdenv.hostPlatform.isDarwin;
+  pythonBuildDependencies = with pkgs; [
+    zlib
+    readline
+    openssl
+    bzip2
+    libffi
+    gdbm
+    xz
+    zstd
+  ];
   zedSettings = builtins.fromJSON (builtins.readFile ./config/zed/settings.json);
   home = home-manager.lib.homeManagerConfiguration {
     inherit pkgs;
@@ -262,6 +272,31 @@ in
           pkg-config
         ]
       );
+    assert
+      isDarwin
+      || lib.all (
+        required:
+        lib.any (package: package.outPath == required.outPath)
+          (if isDarwin then darwin else server).config.environment.systemPackages
+      ) (pythonBuildDependencies ++ map lib.getDev pythonBuildDependencies);
+    assert
+      isDarwin
+      ||
+        (if isDarwin then darwin else server).config.environment.variables.CPATH
+        == lib.makeSearchPathOutput "dev" "include" pythonBuildDependencies;
+    assert
+      isDarwin
+      ||
+        (if isDarwin then darwin else server).config.environment.variables.LIBRARY_PATH
+        == lib.makeLibraryPath pythonBuildDependencies;
+    assert
+      isDarwin
+      ||
+        (if isDarwin then darwin else server).config.environment.variables.PKG_CONFIG_PATH
+        == lib.concatStringsSep ":" [
+          (lib.makeSearchPathOutput "dev" "lib/pkgconfig" pythonBuildDependencies)
+          (lib.makeSearchPathOutput "dev" "share/pkgconfig" pythonBuildDependencies)
+        ];
     assert
       !(builtins.elem mirror (if isDarwin then darwin else server).config.nix.settings.substituters);
     assert builtins.head withTuna.config.nix.settings.substituters == mirror;
