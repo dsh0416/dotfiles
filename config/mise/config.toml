@@ -3,5 +3,4 @@
 idiomatic_version_file_enable_tools = ["node", "python", "ruby"]
 
 [tools]
-rust = "stable"
 "cargo:cargo-clean-global" = "latest"

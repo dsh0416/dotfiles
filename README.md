@@ -52,8 +52,9 @@ SSH host keys.
   On NixOS it also exposes zlib, readline, OpenSSL, bzip2, libffi, gdbm, xz,
   zstd, Tcl/Tk, and SQLite headers and link metadata for mise-managed Python
   source builds.
-- `homeModules.mise` supplies nixpkgs' Nix-aware `rustup` as mise's Rust
-  bootstrap, avoiding the incompatible generic Linux `rustup-init` on NixOS.
+- `homeModules.mise` supplies a declarative global Rust toolchain and exposes
+  nixpkgs' Nix-aware `rustup` as mise's project-local Rust bootstrap, avoiding
+  the incompatible generic Linux `rustup-init` on NixOS.
 
 ## Composition
 

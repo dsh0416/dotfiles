@@ -1,19 +1,20 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 {
   home.packages = [
     (pkgs.callPackage ../../packages/mise { })
-    # mise reuses this package-manager installation instead of downloading the
-    # generic rustup-init binary, which cannot run unpatched on NixOS. nixpkgs'
-    # rustup also patches the Rust toolchains it installs for the NixOS linker.
-    pkgs.rustup
+    # Keep the default Rust toolchain declarative. Generic mise tasks should not
+    # have to activate the Rust backend merely because Rust is globally useful.
+    pkgs.cargo
+    pkgs.rustc
   ];
   home.sessionPath = [
     "$HOME/.local/share/mise/shims"
-    # mise can reuse a package-manager rustup when its directory also contains
-    # the Rust tool proxies. Expose the dedicated package bin directory before
-    # the combined Home Manager profile so mise does not treat every program in
-    # the profile as a Rust proxy and generate unrelated shims for it.
+    # Unconfigured Rust shims fall through to the declarative toolchain in the
+    # Home Manager profile. Keep nixpkgs' Nix-aware rustup proxy directory later
+    # on PATH so project-local Rust declarations can still use it as mise's
+    # external provider without downloading the incompatible generic installer.
+    "${config.home.profileDirectory}/bin"
     "${pkgs.rustup}/bin"
   ];
 

@@ -241,23 +241,37 @@ in
   module-composition =
     assert lib.any (package: package.drvPath == self.packages.${system}.mise.drvPath)
       (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages;
-    assert lib.any (package: package.drvPath == pkgs.rustup.drvPath)
-      (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages;
+    assert lib.all
+      (
+        required:
+        lib.any (package: package.drvPath == required.drvPath)
+          (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages
+      )
+      [
+        pkgs.cargo
+        pkgs.rustc
+      ];
+    assert
+      !(lib.any (package: package.drvPath == pkgs.rustup.drvPath)
+        (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages
+      );
     assert
       let
-        sessionPath =
-          (if isDarwin then darwin else server).config.home-manager.users.${username}.home.sessionPath;
+        homeConfig = (if isDarwin then darwin else server).config.home-manager.users.${username};
+        sessionPath = homeConfig.home.sessionPath;
       in
-      lib.take 2 (
+      lib.take 3 (
         lib.filter (
           path:
           builtins.elem path [
             "$HOME/.local/share/mise/shims"
+            "${homeConfig.home.profileDirectory}/bin"
             "${pkgs.rustup}/bin"
           ]
         ) sessionPath
       ) == [
         "$HOME/.local/share/mise/shims"
+        "${homeConfig.home.profileDirectory}/bin"
         "${pkgs.rustup}/bin"
       ];
     assert lib.all
