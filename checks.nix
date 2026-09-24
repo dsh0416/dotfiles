@@ -314,6 +314,7 @@ in
           (lib.makeSearchPathOutput "dev" "lib/pkgconfig" pythonBuildDependencies)
           (lib.makeSearchPathOutput "dev" "share/pkgconfig" pythonBuildDependencies)
         ];
+    assert isDarwin || (if isDarwin then darwin else server).config.programs.nix-ld.enable;
     assert
       !(builtins.elem mirror (if isDarwin then darwin else server).config.nix.settings.substituters);
     assert builtins.head withTuna.config.nix.settings.substituters == mirror;

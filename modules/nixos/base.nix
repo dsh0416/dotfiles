@@ -45,6 +45,11 @@
 
   programs.zsh.enable = true;
 
+  # mise installs upstream Linux binaries for tools such as uv. Provide the
+  # conventional ELF interpreter and common shared libraries so those binaries
+  # run on NixOS instead of failing at the stub dynamic linker.
+  programs.nix-ld.enable = true;
+
   # Keep this at the version used for the first NixOS activation. It is a
   # compatibility level, not the currently installed NixOS release.
   system.stateVersion = "26.05";
