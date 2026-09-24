@@ -28,6 +28,9 @@ let
     gdbm
     xz
     zstd
+    tcl
+    tk
+    sqlite
   ];
   zedSettings = builtins.fromJSON (builtins.readFile ./config/zed/settings.json);
   home = home-manager.lib.homeManagerConfiguration {

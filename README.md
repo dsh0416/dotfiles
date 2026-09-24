@@ -50,7 +50,8 @@ SSH host keys.
   C/C++ compiler, GNU Make, and pkg-config toolchain. Both `base` modules import
   it so mise can compile runtimes and Rust projects can invoke a system linker.
   On NixOS it also exposes zlib, readline, OpenSSL, bzip2, libffi, gdbm, xz,
-  and zstd headers and link metadata for mise-managed Python source builds.
+  zstd, Tcl/Tk, and SQLite headers and link metadata for mise-managed Python
+  source builds.
 - `homeModules.mise` supplies nixpkgs' Nix-aware `rustup` as mise's Rust
   bootstrap, avoiding the incompatible generic Linux `rustup-init` on NixOS.
 

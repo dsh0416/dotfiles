@@ -10,6 +10,9 @@ let
     gdbm
     xz
     zstd
+    tcl
+    tk
+    sqlite
   ];
 in
 {
@@ -31,7 +34,7 @@ in
   # and pkg-config metadata live in separate development outputs, and neither
   # those nor the library directories are searched globally. Expose all three
   # search paths so Python versions built by mise can enable their standard
-  # compression, crypto, readline, ctypes, and dbm modules.
+  # compression, crypto, readline, ctypes, dbm, Tcl/Tk, and SQLite modules.
   environment.variables = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
     CPATH = lib.makeSearchPathOutput "dev" "include" pythonBuildDependencies;
     LIBRARY_PATH = lib.makeLibraryPath pythonBuildDependencies;
