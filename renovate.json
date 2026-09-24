@@ -5,14 +5,12 @@
   "nix": {
     "enabled": true
   },
-  "schedule": ["before 5am on monday"],
-  "timezone": "Asia/Shanghai",
   "prConcurrentLimit": 1,
   "prHourlyLimit": 1,
   "branchConcurrentLimit": 1,
   "rebaseWhen": "conflicted",
   "lockFileMaintenance": {
-    "enabled": false
+    "enabled": true
   },
   "packageRules": [
     {
