@@ -14,6 +14,12 @@ let
     tk
     sqlite
   ];
+  # Binary Python wheels commonly depend on the GNU C++ runtime and zlib even
+  # when the interpreter itself was built against Nix store paths.
+  pythonRuntimeDependencies = with pkgs; [
+    stdenv.cc.cc
+    zlib
+  ];
 in
 {
   # mise falls back to source builds when an upstream binary is unavailable.
@@ -32,11 +38,14 @@ in
 
   # Installing a library's runtime output is insufficient on NixOS: headers
   # and pkg-config metadata live in separate development outputs, and neither
-  # those nor the library directories are searched globally. Expose all three
+  # those nor the library directories are searched globally. Expose the build
   # search paths so Python versions built by mise can enable their standard
   # compression, crypto, readline, ctypes, dbm, Tcl/Tk, and SQLite modules.
+  # LD_LIBRARY_PATH is deliberately narrower: it only supplies libraries that
+  # manylinux wheels such as NumPy load dynamically but do not bundle.
   environment.variables = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
     CPATH = lib.makeSearchPathOutput "dev" "include" pythonBuildDependencies;
+    LD_LIBRARY_PATH = lib.makeLibraryPath pythonRuntimeDependencies;
     LIBRARY_PATH = lib.makeLibraryPath pythonBuildDependencies;
     PKG_CONFIG_PATH = lib.concatStringsSep ":" [
       (lib.makeSearchPathOutput "dev" "lib/pkgconfig" pythonBuildDependencies)

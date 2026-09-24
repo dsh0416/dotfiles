@@ -32,6 +32,10 @@ let
     tk
     sqlite
   ];
+  pythonRuntimeDependencies = with pkgs; [
+    stdenv.cc.cc
+    zlib
+  ];
   zedSettings = builtins.fromJSON (builtins.readFile ./config/zed/settings.json);
   home = home-manager.lib.homeManagerConfiguration {
     inherit pkgs;
@@ -301,6 +305,11 @@ in
       ||
         (if isDarwin then darwin else server).config.environment.variables.CPATH
         == lib.makeSearchPathOutput "dev" "include" pythonBuildDependencies;
+    assert
+      isDarwin
+      ||
+        (if isDarwin then darwin else server).config.environment.variables.LD_LIBRARY_PATH
+        == lib.makeLibraryPath pythonRuntimeDependencies;
     assert
       isDarwin
       ||

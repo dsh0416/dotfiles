@@ -51,8 +51,10 @@ SSH host keys.
   it so mise can compile runtimes and Rust projects can invoke a system linker.
   On NixOS it also exposes zlib, readline, OpenSSL, bzip2, libffi, gdbm, xz,
   zstd, Tcl/Tk, and SQLite headers and link metadata for mise-managed Python
-  source builds. The NixOS base also enables `nix-ld` so mise-managed upstream
-  Linux binaries such as uv can use the conventional dynamic-loader path.
+  source builds, plus the GCC runtime and zlib search path needed by binary
+  Python wheels such as NumPy. The NixOS base also enables `nix-ld` so
+  mise-managed upstream Linux binaries such as uv can use the conventional
+  dynamic-loader path.
 - `homeModules.mise` supplies a declarative global Rust toolchain and exposes
   nixpkgs' Nix-aware `rustup` as mise's project-local Rust bootstrap, avoiding
   the incompatible generic Linux `rustup-init` on NixOS.
