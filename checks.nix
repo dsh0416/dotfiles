@@ -243,6 +243,11 @@ in
       ];
     home.activationPackage;
   module-composition =
+    assert
+      !isDarwin
+      ||
+        (if isDarwin then darwin else server).config.environment.variables.LIBRARY_PATH
+        == lib.makeLibraryPath [ pkgs.libiconv ];
     assert lib.any (package: package.drvPath == self.packages.${system}.mise.drvPath)
       (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages;
     assert lib.all

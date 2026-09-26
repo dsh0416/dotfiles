@@ -43,13 +43,20 @@ in
   # compression, crypto, readline, ctypes, dbm, Tcl/Tk, and SQLite modules.
   # LD_LIBRARY_PATH is deliberately narrower: it only supplies libraries that
   # manylinux wheels such as NumPy load dynamically but do not bundle.
-  environment.variables = lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
-    CPATH = lib.makeSearchPathOutput "dev" "include" pythonBuildDependencies;
-    LD_LIBRARY_PATH = lib.makeLibraryPath pythonRuntimeDependencies;
-    LIBRARY_PATH = lib.makeLibraryPath pythonBuildDependencies;
-    PKG_CONFIG_PATH = lib.concatStringsSep ":" [
-      (lib.makeSearchPathOutput "dev" "lib/pkgconfig" pythonBuildDependencies)
-      (lib.makeSearchPathOutput "dev" "share/pkgconfig" pythonBuildDependencies)
-    ];
-  };
+  environment.variables =
+    lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
+      CPATH = lib.makeSearchPathOutput "dev" "include" pythonBuildDependencies;
+      LD_LIBRARY_PATH = lib.makeLibraryPath pythonRuntimeDependencies;
+      LIBRARY_PATH = lib.makeLibraryPath pythonBuildDependencies;
+      PKG_CONFIG_PATH = lib.concatStringsSep ":" [
+        (lib.makeSearchPathOutput "dev" "lib/pkgconfig" pythonBuildDependencies)
+        (lib.makeSearchPathOutput "dev" "share/pkgconfig" pythonBuildDependencies)
+      ];
+    }
+    // lib.optionalAttrs pkgs.stdenv.hostPlatform.isDarwin {
+      # Rust tools installed by mise invoke the Nix cc wrapper outside a Nix
+      # build. Its bundled macOS SDK has no libiconv stub, so expose nixpkgs'
+      # compatible library to the linker for crates that request -liconv.
+      LIBRARY_PATH = lib.mkDefault (lib.makeLibraryPath [ pkgs.libiconv ]);
+    };
 }
