@@ -7,6 +7,7 @@
   makeWrapper,
   ripgrep,
   fd,
+  libxcb,
 }:
 
 let
@@ -32,7 +33,12 @@ stdenvNoCC.mkDerivation {
   ++ lib.optionals stdenvNoCC.hostPlatform.isLinux [
     autoPatchelfHook
   ];
-  buildInputs = lib.optionals stdenvNoCC.hostPlatform.isLinux [ stdenv.cc.cc.lib ];
+  # The bundled native X11 module links against libxcb even when Pi runs
+  # without a graphical session.
+  buildInputs = lib.optionals stdenvNoCC.hostPlatform.isLinux [
+    stdenv.cc.cc.lib
+    libxcb
+  ];
   sourceRoot = "pi";
   dontConfigure = true;
   dontBuild = true;
