@@ -1,7 +1,28 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["config:recommended"],
-  "enabledManagers": ["nix", "github-actions"],
+  "enabledManagers": ["nix", "github-actions", "custom.regex"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^packages/pi/sources\\.json$/"],
+      "matchStrings": [
+        "\"platform\":\\s*\"(?<packageName>darwin-arm64|linux-arm64|linux-x64)\",\\s*\"version\":\\s*\"(?<currentValue>\\d+\\.\\d+\\.\\d+)\",\\s*\"sha256\":\\s*\"(?<currentDigest>[a-f0-9]{64})\""
+      ],
+      "depNameTemplate": "pi-{{packageName}}",
+      "datasourceTemplate": "custom.pi-releases",
+      "versioningTemplate": "semver"
+    }
+  ],
+  "customDatasources": {
+    "pi-releases": {
+      "defaultRegistryUrlTemplate": "https://api.github.com/repos/earendil-works/pi/releases?per_page=100",
+      "format": "json",
+      "transformTemplates": [
+        "{\"releases\": [$[draft = false and prerelease = false and $count(assets[name in [\"pi-darwin-arm64.tar.gz\", \"pi-linux-arm64.tar.gz\", \"pi-linux-x64.tar.gz\"] and $type(digest) = \"string\" and $contains(digest, /^sha256:[a-f0-9]{64}$/)]) = 3].{\"version\": $substring(tag_name, 1), \"digest\": $substring(assets[name = \"pi-{{packageName}}.tar.gz\"].digest, 7), \"releaseTimestamp\": published_at, \"changelogUrl\": html_url}], \"sourceUrl\": \"https://github.com/earendil-works/pi\"}"
+      ]
+    }
+  },
   "nix": {
     "enabled": true
   },
@@ -13,6 +34,15 @@
     "enabled": true
   },
   "packageRules": [
+    {
+      "description": "Update all Pi release archives and checksums in one PR",
+      "matchDatasources": ["custom.pi-releases"],
+      "groupName": "Pi releases",
+      "groupSlug": "pi-releases",
+      "separateMajorMinor": false,
+      "separateMinorPatch": false,
+      "automerge": false
+    },
     {
       "description": "Group Nix and GitHub Actions updates",
       "matchManagers": ["nix", "github-actions"],

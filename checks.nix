@@ -233,13 +233,31 @@ let
 in
 {
   mise = self.packages.${system}.mise;
+  pi = self.packages.${system}.pi;
+  renovate-pi =
+    pkgs.runCommand "renovate-pi-check"
+      {
+        nativeBuildInputs = [
+          pkgs.renovate
+          pkgs.nodejs
+        ];
+      }
+      ''
+        renovate-config-validator --strict --no-global ${./renovate.json}
+        node ${./packages/pi/test-renovate.mjs} \
+          ${pkgs.renovate}/lib/node_modules/renovate \
+          ${./renovate.json} ${./packages/pi/sources.json}
+        touch "$out"
+      '';
   pi-settings = pkgs.runCommand "pi-settings-check" { nativeBuildInputs = [ pkgs.python3 ]; } ''
     export PYTHONDONTWRITEBYTECODE=1
     python3 ${./home/programs/pi}/test_merge_settings.py
     touch "$out"
   '';
   home-manager =
-    assert lib.any (package: package.drvPath == pkgs.pi-coding-agent.drvPath) home.config.home.packages;
+    assert lib.any (
+      package: package.drvPath == self.packages.${system}.pi.drvPath
+    ) home.config.home.packages;
     assert !(builtins.hasAttr ".pi/agent/settings.json" home.config.home.file);
     assert !(builtins.hasAttr ".pi/agent/auth.json" home.config.home.file);
     assert !(builtins.hasAttr ".pi/agent/models.json" home.config.home.file);
@@ -252,7 +270,7 @@ in
       ];
     home.activationPackage;
   module-composition =
-    assert lib.any (package: package.drvPath == pkgs.pi-coding-agent.drvPath)
+    assert lib.any (package: package.drvPath == self.packages.${system}.pi.drvPath)
       (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages;
     assert
       !isDarwin

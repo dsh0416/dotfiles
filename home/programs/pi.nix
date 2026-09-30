@@ -44,7 +44,7 @@ in
     }
   ];
 
-  home.packages = [ pkgs.pi-coding-agent ];
+  home.packages = [ (pkgs.callPackage ../../packages/pi { }) ];
 
   # Link individual resources, never the whole agent directory: authentication,
   # provider catalogs, installed packages, and sessions must remain writable.

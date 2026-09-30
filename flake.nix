@@ -106,6 +106,7 @@
 
       packages = forAllSystems (system: {
         mise = nixpkgs.legacyPackages.${system}.callPackage ./packages/mise { };
+        pi = nixpkgs.legacyPackages.${system}.callPackage ./packages/pi { };
       });
 
       apps = forAllSystems (
@@ -120,11 +121,23 @@
                 --manifest "$PWD/packages/mise/sources.json" "$@"
             '';
           };
+          updatePi = pkgs.writeShellApplication {
+            name = "update-pi";
+            runtimeInputs = [ pkgs.python3 ];
+            text = ''
+              exec python3 ${./packages/pi/update.py} \
+                --manifest "$PWD/packages/pi/sources.json" "$@"
+            '';
+          };
         in
         {
           update-mise = {
             type = "app";
             program = "${updateMise}/bin/update-mise";
+          };
+          update-pi = {
+            type = "app";
+            program = "${updatePi}/bin/update-pi";
           };
         }
       );

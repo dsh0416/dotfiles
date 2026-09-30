@@ -148,12 +148,54 @@ kept separate so existing hosts do not change behavior implicitly.
 
 ## Pi agent
 
-`homeModules.base` installs `pkgs.pi-coding-agent` on macOS and Linux, including
+`homeModules.base` installs Pi on macOS and Linux, including
 the server profile when composed with `homeModules.linux`. The standalone
-`homeModules.pi` module is also exported. Pi's version follows the locked
-nixpkgs input; no global npm install or separate Node installation is required.
+`homeModules.pi` module is also exported. The package in `packages/pi/` pins
+official standalone release archives independently of nixpkgs. It includes its
+runtime; no global npm install or separate Node installation is required.
+The same package is exposed as `packages.<system>.pi` for Apple Silicon macOS
+and x86_64/aarch64 Linux. Linux executables and native helpers are patched for
+Nix's dynamic-loader and library paths; the macOS signed executable is preserved.
 Consumers must update their `dotfiles` input and activate their NixOS,
 nix-darwin, or Home Manager configuration to deploy the change.
+
+From this repository, update to the latest stable release or an explicit version:
+
+```sh
+nix run .#update-pi
+nix run .#update-pi -- 0.99.1
+nix build .#pi
+```
+
+The updater downloads all three archives, verifies their SHA-256 hashes against
+the upstream `SHA256SUMS` file and available GitHub asset digests, then updates
+`packages/pi/sources.json`. Commit the manifest and update the consumer's
+`dotfiles` input to deploy the new version. Builds use only the recorded version
+and hashes; they never resolve `latest`. Use this update command for the Nix
+package rather than Pi's self-updater.
+
+Renovate tracks Pi releases and updates the version and SHA-256 digest for all
+three platform archives together in a dedicated `Pi releases` PR. The custom
+datasource reads GitHub release asset digests and only offers published stable
+releases with all three archives and valid SHA-256 digests. No post-upgrade
+command or extra GitHub Actions write token is required. Updates retain manual
+merge approval and the normal Linux/macOS build checks.
+
+The manifest records a version next to each platform's `sha256` so Renovate can
+replace each version/checksum pair reliably. Nix rejects mismatched platform
+versions. The manual updater remains available and additionally downloads every
+archive to verify it against upstream `SHA256SUMS` before updating the manifest.
+
+Recent Pi versions also refresh their model catalog separately from the program:
+
+```sh
+pi update --models
+```
+
+This can make newly cataloged models available without a package update; new API
+features and provider implementations can still require a newer Pi release.
+The refreshed catalog is runtime state and stays local to each machine. See
+the upstream [model guide](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/models.md).
 
 Keep shared preferences in `config/pi/settings.json`. It starts as `{}` because
 there are no existing local preferences to migrate. For example:
