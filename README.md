@@ -41,7 +41,7 @@ SSH host keys.
 - `homeModules.base`, `linux`, `development-cli`, `editor`, `desktop`,
   `linux-desktop`, and `multimedia`. The existing `desktop` name selects the
   macOS Home Manager profile; `linux` adds the Linux home-directory convention.
-- Program-level Home Manager modules are exported for CLI, Git, Hyper, mise,
+- Program-level Home Manager modules are exported for CLI, Git, Hyper, mise, pi,
   Neovim, Rime, Starship, Zed, and Zsh.
 - `nixosModules.maintenance` and `darwinModules.maintenance`: shared Nix
   feature, garbage-collection, and store-optimisation policy. Both `base`
@@ -145,6 +145,72 @@ Rime state and user dictionaries remain outside these modules.
 TUNA is opt-in. Import `dotfiles.darwinModules.tuna` or
 `dotfiles.nixosModules.tuna` only where the mirror is wanted. The module is
 kept separate so existing hosts do not change behavior implicitly.
+
+## Pi agent
+
+`homeModules.base` installs `pkgs.pi-coding-agent` on macOS and Linux, including
+the server profile when composed with `homeModules.linux`. The standalone
+`homeModules.pi` module is also exported. Pi's version follows the locked
+nixpkgs input; no global npm install or separate Node installation is required.
+Consumers must update their `dotfiles` input and activate their NixOS,
+nix-darwin, or Home Manager configuration to deploy the change.
+
+Keep shared preferences in `config/pi/settings.json`. It starts as `{}` because
+there are no existing local preferences to migrate. For example:
+
+```json
+{
+  "quietStartup": true,
+  "defaultThinkingLevel": "high",
+  "terminal": { "showImages": true }
+}
+```
+
+Home Manager merges these preferences into the writable
+`~/.pi/agent/settings.json` on every activation. Shared values take precedence;
+unmanaged local keys and nested siblings survive. Removing a shared preference
+also removes the previously managed value on the next activation. Pi can still
+save `/settings`, `/model`, and package changes normally. To retain changes to
+managed preferences across activations, edit the shared source and commit it.
+Resource arrays in shared settings replace their corresponding local arrays.
+Pi package declarations can live in `packages` (pin their versions for consistent
+machines); downloaded package contents remain local and Pi manages their
+installation. Nix activation does not fetch Pi packages.
+
+Add any of these files or directories under `config/pi/` and the module links
+them into `~/.pi/agent/` on the next activation:
+
+| Shared source | Purpose |
+| --- | --- |
+| `keybindings.json` | Keyboard shortcuts |
+| `AGENTS.md`, `AGENTS.override.md` | Global instructions |
+| `SYSTEM.md`, `APPEND_SYSTEM.md` | System prompt replacement or additions |
+| `skills/`, `prompts/` | Skills and slash-command templates |
+| `extensions/`, `themes/` | Extension code and custom themes |
+| `mcp.json` | MCP configuration for Pi versions/extensions that support it |
+
+Directories use individual file links, so other local resources can coexist.
+For example, add `config/pi/skills/my-skill/SKILL.md` or
+`config/pi/prompts/review.md`. Commit actual files and their supporting assets;
+links to machine-specific locations will not work on other machines. Existing
+files at a managed destination must be moved aside or backed up before the
+first activation; the module does not force-overwrite them. Linked resources
+are read-only: edit their dotfiles sources.
+
+Keep `auth.json`, `models.json`, `models-store.json`, sessions, caches, and
+downloaded binaries/packages on each machine. They are excluded from management
+and ignored under `config/pi/`. Set `defaultProvider`, `defaultModel`,
+`enabledModels`, and per-model settings locally; provider/model selection keys
+are rejected in shared settings. Use environment variable references for any
+credentials needed by shared extension or MCP configuration. The module uses
+Pi's default agent directory; keep `PI_CODING_AGENT_DIR` unset when using it.
+See the upstream [configuration guide](https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/configuration.md)
+and the settings documentation shipped with the installed Pi version.
+
+The deployment keeps a local `.dotfiles-settings.json` snapshot of previously
+managed preferences, writes settings atomically, and respects Pi's settings lock.
+Invalid existing JSON or a held lock stops deployment without overwriting the
+settings. `settings.json` must be a regular writable file, not a store symlink.
 
 ## mise releases
 

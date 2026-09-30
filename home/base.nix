@@ -8,6 +8,7 @@
 {
   imports = [
     ./programs/git.nix
+    ./programs/pi.nix
     ./programs/zsh.nix
   ];
 

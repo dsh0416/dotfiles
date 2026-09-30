@@ -233,7 +233,16 @@ let
 in
 {
   mise = self.packages.${system}.mise;
+  pi-settings = pkgs.runCommand "pi-settings-check" { nativeBuildInputs = [ pkgs.python3 ]; } ''
+    export PYTHONDONTWRITEBYTECODE=1
+    python3 ${./home/programs/pi}/test_merge_settings.py
+    touch "$out"
+  '';
   home-manager =
+    assert lib.any (package: package.drvPath == pkgs.pi-coding-agent.drvPath) home.config.home.packages;
+    assert !(builtins.hasAttr ".pi/agent/settings.json" home.config.home.file);
+    assert !(builtins.hasAttr ".pi/agent/auth.json" home.config.home.file);
+    assert !(builtins.hasAttr ".pi/agent/models.json" home.config.home.file);
     assert lib.any (package: lib.getName package == "nixd") home.config.home.packages;
     assert zedSettings.auto_install_extensions.nix;
     assert
@@ -243,6 +252,8 @@ in
       ];
     home.activationPackage;
   module-composition =
+    assert lib.any (package: package.drvPath == pkgs.pi-coding-agent.drvPath)
+      (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages;
     assert
       !isDarwin
       ||

@@ -87,6 +87,7 @@
         hyper = ./home/programs/hyper.nix;
         mise = ./home/programs/mise.nix;
         neovim = ./home/programs/neovim.nix;
+        pi = ./home/programs/pi.nix;
         rime = ./home/programs/rime.nix;
         rime-linux = ./home/programs/rime-linux.nix;
         starship = ./home/programs/starship.nix;

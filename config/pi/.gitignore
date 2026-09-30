@@ -1,0 +1,11 @@
+# Provider configuration and runtime state must stay on each machine.
+auth.json
+models.json
+models-store.json
+sessions/
+bin/
+cache/
+git/
+node_modules/
+settings.json.lock/
+.dotfiles-settings.json
