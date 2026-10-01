@@ -23,6 +23,8 @@
     masApps = {
       "DaisyDisk 2" = 411643860;
       Keynote = 361285480;
+      "Numbers: Make Spreadsheets" = 361304891;
+      "Pages: Create Documents" = 361309726;
       Speedtest = 1153157709;
     };
   };

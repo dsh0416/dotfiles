@@ -10,10 +10,11 @@
     ];
 
     masApps = {
-      Compressor = 424390742;
-      "Final Cut Pro" = 424389933;
-      "Logic Pro" = 634148309;
-      MainStage = 634159523;
+      "Compressor: Encode Media" = 6746516157;
+      "Final Cut Pro: Create Video" = 1631624924;
+      "Logic Pro: Make Music" = 1615087040;
+      "MainStage: Perform Live" = 6746637089;
+      "Pixelmator Pro: Edit Images" = 6746662575;
     };
   };
 }
