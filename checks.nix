@@ -281,18 +281,16 @@ in
       (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages;
     assert lib.all
       (
-        required:
-        lib.any (package: package.drvPath == required.drvPath)
+        removed:
+        !(lib.any (package: package.drvPath == removed.drvPath)
           (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages
+        )
       )
       [
         pkgs.cargo
         pkgs.rustc
+        pkgs.rustup
       ];
-    assert
-      !(lib.any (package: package.drvPath == pkgs.rustup.drvPath)
-        (if isDarwin then darwin else server).config.home-manager.users.${username}.home.packages
-      );
     assert
       let
         homeConfig = (if isDarwin then darwin else server).config.home-manager.users.${username};
@@ -304,14 +302,28 @@ in
           builtins.elem path [
             "$HOME/.local/share/mise/shims"
             "${homeConfig.home.profileDirectory}/bin"
-            "${pkgs.rustup}/bin"
+            "$HOME/.local/share/mise-cargo/bin"
           ]
         ) sessionPath
       ) == [
         "$HOME/.local/share/mise/shims"
         "${homeConfig.home.profileDirectory}/bin"
-        "${pkgs.rustup}/bin"
+        "$HOME/.local/share/mise-cargo/bin"
       ];
+    assert
+      let
+        homeConfig = (if isDarwin then darwin else server).config.home-manager.users.${username};
+      in
+      homeConfig.home.sessionVariables.CARGO_HOME
+      == "${homeConfig.home.homeDirectory}/.local/share/mise-cargo"
+      &&
+        homeConfig.home.sessionVariables.RUSTUP_HOME
+        == "${homeConfig.home.homeDirectory}/.local/share/mise-rustup"
+      && !(builtins.elem "${pkgs.rustup}/bin" homeConfig.home.sessionPath)
+      && (
+        (builtins.hasAttr ".local/share/mise-cargo/config.toml" homeConfig.home.file)
+        == (pkgs.stdenv.hostPlatform.isLinux && pkgs.stdenv.hostPlatform.isx86_64)
+      );
     assert lib.all
       (
         required:

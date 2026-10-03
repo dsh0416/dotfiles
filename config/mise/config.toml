@@ -2,5 +2,12 @@
 # Recognize project-local version files while replacing nvm, pyenv, and RVM.
 idiomatic_version_file_enable_tools = ["node", "python", "ruby"]
 
+[env]
+# Explicit homes select mise's upstream rustup bootstrap even when a Nix
+# rustup proxy or an old ~/.cargo/bin is present on PATH.
+CARGO_HOME = "{{env.HOME}}/.local/share/mise-cargo"
+RUSTUP_HOME = "{{env.HOME}}/.local/share/mise-rustup"
+
 [tools]
+rust = "stable"
 "cargo:cargo-clean-global" = "latest"

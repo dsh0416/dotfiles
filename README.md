@@ -55,9 +55,9 @@ SSH host keys.
   Python wheels such as NumPy. The NixOS base also enables `nix-ld` so
   mise-managed upstream Linux binaries such as uv can use the conventional
   dynamic-loader path.
-- `homeModules.mise` supplies a declarative global Rust toolchain and exposes
-  nixpkgs' Nix-aware `rustup` as mise's project-local Rust bootstrap, avoiding
-  the incompatible generic Linux `rustup-init` on NixOS.
+- `homeModules.mise` declares a global stable Rust toolchain in mise and uses
+  upstream rustup in dedicated user directories. Nix supplies the native
+  compiler and libraries; the NixOS base supplies `nix-ld` for upstream binaries.
 
 ## Composition
 
@@ -277,6 +277,49 @@ against the release checksum file before replacing `packages/mise/sources.json`.
 Review and commit that manifest, then update the consuming repository's
 `dotfiles` input. Builds use only the committed version and hashes; they never
 resolve `latest`. No additional nixpkgs input or consumer overlay is needed.
+
+## Rust toolchains
+
+`homeModules.mise` gives mise ownership of Rust versions, components, and
+targets through upstream rustup. Its global default is `stable`; project
+`mise.toml` files can select a specific release or nightly. Both mise and
+standalone rustup/Cargo commands use `~/.local/share/mise-rustup` and
+`~/.local/share/mise-cargo`. The explicit homes prevent mise from selecting
+nixpkgs' rustup bootstrap or reusing previously patched toolchains. The module
+provides mise shims and the new Cargo bin directory on `PATH`.
+
+On NixOS, also import `nixosModules.base` or enable `programs.nix-ld` with the
+runtime libraries needed by upstream tools. Keep `nixosModules.build-tools`
+for the native compiler and library development outputs. On Linux x86_64,
+the managed Cargo configuration selects Nix's `cc` driver and disables Rust's
+self-contained lld via `-C linker-features=-lld`. The compiler path is retained
+by the Home Manager generation. Darwin and Linux aarch64 retain their default
+linker selection. Project Cargo configurations can override these settings;
+merge the linker feature flag into project-specific `rustflags` when needed.
+
+After updating the consumer's dotfiles input and activating its configuration:
+
+1. Start a fresh login session so the new `PATH`, `CARGO_HOME`, and
+   `RUSTUP_HOME` replace the previous session's settings. Remove manual shell
+   startup lines that prepend the old `~/.cargo/bin` or source `~/.cargo/env`.
+2. Run `mise install` from a trusted project or your home directory. This
+   downloads upstream rustup and the selected Rust toolchains into the new
+   directories. Activation itself does not install mutable toolchains.
+3. Check `mise exec -- rustup show` and `mise exec -- cargo --version`.
+   Reinstall additional components, targets, and standalone Cargo tools in
+   the new home as needed. Existing tool binaries under mise's own installs
+   remain available.
+4. Keep `~/.rustup` and `~/.cargo` as migration backups until your projects
+   work. The module leaves them untouched; copying old toolchains into the
+   new directories would reintroduce the broken linker wrappers.
+
+Nixpkgs' rustup patches downloaded toolchains with concrete Nix store paths,
+including an lld wrapper. Toolchains in a mutable user directory do not
+automatically retain those dependencies as GC roots. Using upstream rustup
+avoids that wrapper dependency. Locally compiled programs can still reference
+Nix libraries: rebuild them after dependency changes, or package durable
+tools with Nix so their runtime dependencies remain in the closure. Use a
+project devShell for additional native dependencies.
 
 ## Checks
 
