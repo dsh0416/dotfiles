@@ -324,6 +324,11 @@ in
         (builtins.hasAttr ".local/share/mise-cargo/config.toml" homeConfig.home.file)
         == (pkgs.stdenv.hostPlatform.isLinux && pkgs.stdenv.hostPlatform.isx86_64)
       );
+    assert
+      let
+        homeConfig = (if isDarwin then darwin else server).config.home-manager.users.${username};
+      in
+      builtins.hasAttr "${homeConfig.home.homeDirectory}/.config/mise/mise.lock" homeConfig.home.file;
     assert lib.all
       (
         required:

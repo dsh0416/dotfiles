@@ -288,6 +288,13 @@ standalone rustup/Cargo commands use `~/.local/share/mise-rustup` and
 nixpkgs' rustup bootstrap or reusing previously patched toolchains. The module
 provides mise shims and the new Cargo bin directory on `PATH`.
 
+`homeModules.mise` also ships a read-only global `~/.config/mise/mise.lock`.
+A locked install resolves every active config scope, so a global tool without a
+global lockfile entry makes `mise install --locked` fail in any project that
+sets `lockfile = true`. After changing the global tools, regenerate the
+lockfile with `mise lock -g` and commit `config/mise/mise.lock`; never edit it
+by hand.
+
 On NixOS, also import `nixosModules.base` or enable `programs.nix-ld` with the
 runtime libraries needed by upstream tools. Keep `nixosModules.build-tools`
 for the native compiler and library development outputs. On Linux x86_64,

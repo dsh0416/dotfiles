@@ -39,4 +39,15 @@
     source = ../../config/mise/config.toml;
     force = true;
   };
+
+  # A locked install resolves every active config scope, including the global
+  # one. Ship the global lockfile so `mise install --locked` in a project with
+  # `lockfile = true` can resolve the global `rust` and `cargo:` tools instead
+  # of failing with "not in the lockfile". Regenerate with `mise lock -g` after
+  # changing global tools and commit the result; keep it read-only like the
+  # global config.
+  xdg.configFile."mise/mise.lock" = {
+    source = ../../config/mise/mise.lock;
+    force = true;
+  };
 }
