@@ -12,6 +12,16 @@
       "depNameTemplate": "pi-{{packageName}}",
       "datasourceTemplate": "custom.pi-releases",
       "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^packages/mise/sources\\.json$/"],
+      "matchStrings": [
+        "\"platform\":\\s*\"(?<packageName>macos-arm64|linux-arm64-musl|linux-x64-musl)\",\\s*\"version\":\\s*\"(?<currentValue>\\d{4}\\.\\d+\\.\\d+)\",\\s*\"sha256\":\\s*\"(?<currentDigest>[a-f0-9]{64})\""
+      ],
+      "depNameTemplate": "mise-{{packageName}}",
+      "datasourceTemplate": "custom.mise-releases",
+      "versioningTemplate": "semver"
     }
   ],
   "customDatasources": {
@@ -20,6 +30,13 @@
       "format": "json",
       "transformTemplates": [
         "{\"releases\": [$[draft = false and prerelease = false and $count(assets[name in [\"pi-darwin-arm64.tar.gz\", \"pi-linux-arm64.tar.gz\", \"pi-linux-x64.tar.gz\"] and $type(digest) = \"string\" and $contains(digest, /^sha256:[a-f0-9]{64}$/)]) = 3].{\"version\": $substring(tag_name, 1), \"digest\": $substring(assets[name = \"pi-{{packageName}}.tar.gz\"].digest, 7), \"releaseTimestamp\": published_at, \"changelogUrl\": html_url}], \"sourceUrl\": \"https://github.com/earendil-works/pi\"}"
+      ]
+    },
+    "mise-releases": {
+      "defaultRegistryUrlTemplate": "https://api.github.com/repos/jdx/mise/releases/latest",
+      "format": "json",
+      "transformTemplates": [
+        "{\"releases\": [$[draft = false and prerelease = false and $contains(tag_name, /^v[0-9]{4}\\.[0-9]+\\.[0-9]+$/)].($release := $; $names := [\"mise-\" & tag_name & \"-macos-arm64.tar.gz\", \"mise-\" & tag_name & \"-linux-arm64-musl.tar.gz\", \"mise-\" & tag_name & \"-linux-x64-musl.tar.gz\"]; $valid := assets[name in $names and $type(digest) = \"string\" and $contains(digest, /^sha256:[a-f0-9]{64}$/)]; $count($valid) = 3 and $count($distinct($valid.name)) = 3 ? {\"version\": $substring(tag_name, 1), \"digest\": $substring($valid[name = \"mise-\" & $release.tag_name & \"-{{packageName}}.tar.gz\"].digest, 7), \"releaseTimestamp\": published_at, \"changelogUrl\": html_url})], \"sourceUrl\": \"https://github.com/jdx/mise\"}"
       ]
     }
   },
@@ -39,6 +56,15 @@
       "matchDatasources": ["custom.pi-releases"],
       "groupName": "Pi releases",
       "groupSlug": "pi-releases",
+      "separateMajorMinor": false,
+      "separateMinorPatch": false,
+      "automerge": false
+    },
+    {
+      "description": "Update all mise release archives and checksums in one PR",
+      "matchDatasources": ["custom.mise-releases"],
+      "groupName": "mise releases",
+      "groupSlug": "mise-releases",
       "separateMajorMinor": false,
       "separateMinorPatch": false,
       "automerge": false
