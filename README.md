@@ -278,6 +278,18 @@ Review and commit that manifest, then update the consuming repository's
 `dotfiles` input. Builds use only the committed version and hashes; they never
 resolve `latest`. No additional nixpkgs input or consumer overlay is needed.
 
+Renovate tracks mise through a custom datasource using GitHub's latest stable
+release API. It updates all three platform versions and SHA-256 digests in one
+PR, accepting a release only when every expected archive has a valid digest.
+If the latest release is incomplete, updates wait until all three archives are
+available. No post-upgrade command or extra GitHub Actions write token is needed.
+Updates retain manual merge approval and the normal Linux/macOS build checks.
+
+Each platform records its own `version` and hexadecimal `sha256`, allowing
+Renovate to replace each pair together. Nix rejects mismatched platform versions.
+The manual updater remains available and downloads every archive to verify it
+against upstream `SHASUMS256.txt` before replacing the manifest.
+
 ## Rust toolchains
 
 `homeModules.mise` gives mise ownership of Rust versions, components, and

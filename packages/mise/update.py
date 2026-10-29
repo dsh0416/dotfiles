@@ -2,7 +2,6 @@
 """Pin an upstream mise release after verifying every supported archive."""
 
 import argparse
-import base64
 import hashlib
 import json
 from pathlib import Path
@@ -53,11 +52,11 @@ def main():
                 digest.update(chunk)
         if digest.hexdigest() != expected:
             raise ValueError(f"Checksum mismatch for {name}")
-        asset["hash"] = "sha256-" + base64.b64encode(digest.digest()).decode()
+        asset["version"] = version
+        asset["sha256"] = digest.hexdigest()
         print(f"Verified {system}: {name}", flush=True)
 
     # Replace the manifest only after all platforms have been verified.
-    manifest["version"] = version
     rendered = json.dumps(manifest, indent=2) + "\n"
     if args.manifest.read_text() != rendered:
         temporary = args.manifest.with_suffix(".json.tmp")

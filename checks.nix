@@ -234,6 +234,21 @@ in
 {
   mise = self.packages.${system}.mise;
   pi = self.packages.${system}.pi;
+  renovate-mise =
+    pkgs.runCommand "renovate-mise-check"
+      {
+        nativeBuildInputs = [
+          pkgs.renovate
+          pkgs.nodejs
+        ];
+      }
+      ''
+        renovate-config-validator --strict --no-global ${./renovate.json}
+        node ${./packages/mise/test-renovate.mjs} \
+          ${pkgs.renovate}/lib/node_modules/renovate \
+          ${./renovate.json} ${./packages/mise/sources.json}
+        touch "$out"
+      '';
   renovate-pi =
     pkgs.runCommand "renovate-pi-check"
       {

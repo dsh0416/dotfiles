@@ -10,13 +10,16 @@ let
   asset = sources.assets.${stdenvNoCC.hostPlatform.system};
   canExecute = stdenvNoCC.buildPlatform.canExecute stdenvNoCC.hostPlatform;
 in
+assert lib.assertMsg (lib.all (candidate: candidate.version == asset.version) (
+  builtins.attrValues sources.assets
+)) "mise release versions must match across all supported platforms";
 stdenvNoCC.mkDerivation {
   pname = "mise";
-  inherit (sources) version;
+  inherit (asset) version;
 
   src = fetchurl {
-    url = "https://github.com/jdx/mise/releases/download/v${sources.version}/mise-v${sources.version}-${asset.platform}.tar.gz";
-    inherit (asset) hash;
+    url = "https://github.com/jdx/mise/releases/download/v${asset.version}/mise-v${asset.version}-${asset.platform}.tar.gz";
+    inherit (asset) sha256;
   };
 
   nativeBuildInputs = [ installShellFiles ];
@@ -54,14 +57,14 @@ stdenvNoCC.mkDerivation {
   doInstallCheck = canExecute;
   installCheckPhase = ''
     runHook preInstallCheck
-    "$out/bin/mise" --version | grep -F "${sources.version} "
+    "$out/bin/mise" --version | grep -F "${asset.version} "
     runHook postInstallCheck
   '';
 
   meta = {
     description = "Development environment and task manager";
     homepage = "https://mise.jdx.dev";
-    changelog = "https://github.com/jdx/mise/releases/tag/v${sources.version}";
+    changelog = "https://github.com/jdx/mise/releases/tag/v${asset.version}";
     license = lib.licenses.mit;
     mainProgram = "mise";
     platforms = builtins.attrNames sources.assets;
