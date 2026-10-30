@@ -16,8 +16,10 @@ SSH host keys.
 - `nixosModules.server` and `nixosModules.desktop`: SSH-only server/TUI and
   GNOME workstation layers.
 - `nixosModules.gnome`, `fcitx5`, `fonts`, and `hyper`: individual desktop
-  capabilities. `hyper` supplies the existing runtime-library overlay; it does
-  not install the application on its own.
+  capabilities. `gnome` also enables AppImage support with `appimage-run` and
+  binfmt registration, including when composed without the desktop profile.
+  `hyper` supplies the existing runtime-library overlay; it does not install
+  the application on its own.
 - `nixosModules.podman`: Podman, Docker CLI compatibility, container-name DNS,
   IPv6-capable default networking, and the declarative OCI backend. Consumers
   retain ownership of fleet-specific subnets and routed addresses.
