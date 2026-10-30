@@ -15,11 +15,13 @@ SSH host keys.
   login-time kernel reboot notification.
 - `nixosModules.server` and `nixosModules.desktop`: SSH-only server/TUI and
   GNOME workstation layers.
-- `nixosModules.gnome`, `fcitx5`, `fonts`, and `hyper`: individual desktop
-  capabilities. `gnome` also enables AppImage support with `appimage-run` and
+- `nixosModules.gnome`, `gstreamer`, `fcitx5`, `fonts`, and `hyper`: individual
+  desktop capabilities. `gnome` also enables AppImage support with `appimage-run` and
   binfmt registration, including when composed without the desktop profile.
   `hyper` supplies the existing runtime-library overlay; it does not install
   the application on its own.
+- `nixosModules.gstreamer`: GStreamer tools, base/good/bad/ugly plugins, and
+  libav codecs, with plugin discovery configured for graphical login sessions.
 - `nixosModules.podman`: Podman, Docker CLI compatibility, container-name DNS,
   IPv6-capable default networking, and the declarative OCI backend. Consumers
   retain ownership of fleet-specific subnets and routed addresses.
@@ -94,9 +96,10 @@ home-manager.users.example.imports = [
 ```
 
 `nixosModules.desktop` continues to include `server`, its SSH/firewall/sudo
-policy, and the development CLI environment. It composes GNOME, Fcitx5, fonts,
-the Hyper overlay, Chrome, Kimpanel, and the Linux Home Manager desktop. For a
-custom workstation, import the individual capabilities instead of this preset:
+policy, and the development CLI environment. It composes GNOME, GStreamer,
+Fcitx5, fonts, the Hyper overlay, Chrome, Kimpanel, and the Linux Home Manager
+desktop. For a custom workstation, import the individual capabilities instead
+of this preset:
 
 ```nix
 modules = [

@@ -12,6 +12,7 @@ in
     ../fcitx5.nix
     ../fonts.nix
     ../gnome.nix
+    ../gstreamer.nix
     ../hyper.nix
     ./server.nix
   ];

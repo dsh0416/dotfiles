@@ -51,6 +51,7 @@
         caddy-cloudflare = ./modules/nixos/caddy-cloudflare.nix;
         comin = ./modules/nixos/comin.nix;
         gnome = ./modules/nixos/gnome.nix;
+        gstreamer = ./modules/nixos/gstreamer.nix;
         fcitx5 = ./modules/nixos/fcitx5.nix;
         fonts = ./modules/nixos/fonts.nix;
         hyper = ./modules/nixos/hyper.nix;
