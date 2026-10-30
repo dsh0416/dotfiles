@@ -1,4 +1,9 @@
 {
+  programs.appimage = {
+    enable = true;
+    binfmt = true;
+  };
+
   services = {
     xserver.enable = true;
     displayManager.gdm.enable = true;
