@@ -1,5 +1,8 @@
 {
   virtualisation = {
+    # Generate the shared containers configuration, including policy.json.
+    containers.enable = true;
+
     podman = {
       enable = true;
       dockerCompat = true;

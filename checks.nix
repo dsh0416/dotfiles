@@ -192,7 +192,11 @@ let
             package: (package.meta.mainProgram or null) == "zed"
           ) desktop.config.home-manager.users.${username}.home.packages;
           desktop.config.system.build.toplevel.drvPath;
-        podman = podman.config.system.build.toplevel.drvPath;
+        podman =
+          assert podman.config.virtualisation.containers.enable;
+          assert podman.config.users.users.${username}.autoSubUidGidRange;
+          assert podman.config.environment.etc ? "containers/policy.json";
+          podman.config.system.build.toplevel.drvPath;
         gitlab-nix-runner =
           assert gitlabNixRunner.config.virtualisation.podman.dockerSocket.enable;
           assert !gitlabNixRunner.config.virtualisation.docker.enable;

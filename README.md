@@ -24,7 +24,8 @@ SSH host keys.
   libav codecs, with plugin discovery configured for graphical login sessions.
 - `nixosModules.podman`: Podman, Docker CLI compatibility, container-name DNS,
   IPv6-capable default networking, and the declarative OCI backend. Consumers
-  retain ownership of fleet-specific subnets and routed addresses.
+  retain ownership of fleet-specific subnets, routed addresses, and rootless
+  user ID mappings (`users.users.<name>.autoSubUidGidRange`).
 - `nixosModules.bootstrap`: the cloud-init, serial-console, key-only SSH, and
   QEMU guest baseline used by bootstrap VM images.
 - `nixosModules.caddy-cloudflare`: Caddy built with the Cloudflare DNS plugin;
