@@ -191,6 +191,13 @@ let
           assert lib.any (
             package: (package.meta.mainProgram or null) == "zed"
           ) desktop.config.home-manager.users.${username}.home.packages;
+          assert lib.any (
+            package: package.drvPath == pkgs.gnomeExtensions.appindicator.drvPath
+          ) desktop.config.environment.systemPackages;
+          # Home Manager wraps dconf values in GVariant nodes; inspect the
+          # unwrapped string list.
+          assert lib.any (entry: entry.value == "appindicatorsupport@rgcjonas.gmail.com")
+            desktop.config.home-manager.users.${username}.dconf.settings."org/gnome/shell".enabled-extensions.value;
           desktop.config.system.build.toplevel.drvPath;
         podman =
           assert podman.config.virtualisation.containers.enable;
