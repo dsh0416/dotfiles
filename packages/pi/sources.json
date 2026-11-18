@@ -2,18 +2,18 @@
   "assets": {
     "aarch64-darwin": {
       "platform": "darwin-arm64",
-      "version": "1.4.0",
-      "sha256": "79d9979d76a2a5adb7c28e27e9b44629928ccd0dc9fbb6ae7217860bd5e8be5d"
+      "version": "1.5.2",
+      "sha256": "56b5e194d485ced555667b8ba3276157a8272e9ecde9e001e428af80985bdd9b"
     },
     "aarch64-linux": {
       "platform": "linux-arm64",
-      "version": "1.4.0",
-      "sha256": "fa5829c7ef83ffeaebba015715c8306220f89b2aa8a00154efbba98dd5440156"
+      "version": "1.5.2",
+      "sha256": "42805cd5615952fcbbfc9c56b04f8feb84395134952e169a6cdc8d7676975666"
     },
     "x86_64-linux": {
       "platform": "linux-x64",
-      "version": "1.4.0",
-      "sha256": "f2e4e4329603223d03260cdb8bd5033dbdc1f73ba58ab8939db2e56546e115d2"
+      "version": "1.5.2",
+      "sha256": "811c6f2c9e7aaee252b5404252e556fb713aa209c1f7f924226aa77d4ef70cb5"
     }
   }
 }
