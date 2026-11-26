@@ -4,7 +4,7 @@ let
   # withPlugins vendors Caddy together with the DNS plugin.
   vendorHashes = {
     "2.11.4" = "sha256-9tO1blZoDhfxBbHMYsJzEWejuAuzM36/56dBR68dVKk=";
-    "2.11.7" = "sha256-8KwWkxhCyz7cxRFjm47tUS/veVH7cVzv/+FQ16ri3jE=";
+    "2.11.7" = "sha256-weP1HzwGvPlLqiAViJus1GN74bps3bI179gomTCb6N4=";
   };
 in
 {
