@@ -2,10 +2,12 @@
   config,
   lib,
   inputs,
+  pkgs,
   ...
 }:
 let
   cfg = config.services.dotfiles-comin;
+  upstreamComin = pkgs.comin or inputs.comin.packages.${pkgs.stdenv.hostPlatform.system}.comin;
 in
 {
   options.services.dotfiles-comin = {
@@ -52,6 +54,18 @@ in
     };
     services.comin = {
       enable = true;
+      # Take precedence over Comin's mkDefault while allowing a host package override.
+      package = lib.mkOverride 900 (
+        upstreamComin.overrideAttrs (old: {
+          patches = (old.patches or [ ]) ++ [ ./comin-preserve-new-generation.patch ];
+          doCheck = true;
+          checkPhase = ''
+            runHook preCheck
+            go test -run '^TestBuilderPreemptedBuildIsCanceledNotFailed$' ./internal/builder
+            runHook postCheck
+          '';
+        })
+      );
       hostname = cfg.hostname;
       repositoryType = "flake";
       remotes = [

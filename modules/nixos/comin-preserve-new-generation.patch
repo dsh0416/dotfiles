@@ -1,0 +1,40 @@
+--- a/internal/builder/builder_test.go
++++ b/internal/builder/builder_test.go
+@@ -301,7 +301,11 @@
+ 
+ 	// A newer commit lands while commit-1 is still building.
+ 	generation2 := s.NewGeneration("", "", "", &protobuf.GitRepositoryStatus{SelectedCommitId: "commit-2"}, 0)
+-	_ = b.Eval(ctx, &generation2)
++	if err := b.Eval(ctx, &generation2); err != nil {
++		t.Fatal(err)
++	}
++	eMock.evalDone <- struct{}{}
++	assert.Equal(t, generation2.Uuid, <-b.EvaluationDone)
+ 
+ 	assert.EventuallyWithT(t, func(c *assert.CollectT) {
+ 		g, err := b.store.GenerationGet(gUUID)
+--- a/internal/store/generation.go
++++ b/internal/store/generation.go
+@@ -113,6 +113,9 @@
+ }
+ 
+ func (s *Store) NewGeneration(hostname, repositoryDir, systemAttr string, rs *protobuf.GitRepositoryStatus, buildAttemptsLimit int) (g protobuf.Generation) {
++	s.mu.Lock()
++	defer s.mu.Unlock()
++
+ 	// Find the selected remote URL
+ 	selectedRemoteUrl := ""
+ 	for _, remote := range rs.Remotes {
+@@ -199,8 +202,10 @@
+ // generationsGC garbage collects unwanted generations. This is not thread safe.
+ func (s *Store) generationsGC() {
+ 	alive := make([]*protobuf.Generation, 0)
+-	for _, g := range s.persisted.Generations {
+-		if g == s.lastEvalStarted || g == s.lastEvalFinished || g == s.lastBuildStarted || g == s.lastBuildFinished {
++	for i, g := range s.persisted.Generations {
++		// Finishing a preempted build or eval runs GC before its replacement starts.
++		newest := i == len(s.persisted.Generations)-1
++		if newest || g == s.lastEvalStarted || g == s.lastEvalFinished || g == s.lastBuildStarted || g == s.lastBuildFinished {
+ 			alive = append(alive, g)
+ 		}
+ 	}

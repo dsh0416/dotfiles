@@ -424,6 +424,7 @@ in
       caddy-cloudflare =
         (nixos.extendModules { modules = [ self.nixosModules.caddy-cloudflare ]; })
         .config.services.caddy.package;
+      comin = comin.config.services.comin.package;
       nixos-module = nixos.config.system.build.toplevel;
       gitlab-nix-runner-image = gitlabNixRunner.config.system.build.dotfilesGitlabNixRunnerJobImage;
     }
